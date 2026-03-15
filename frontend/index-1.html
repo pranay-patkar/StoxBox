@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="StoxBox"/>
+<meta name="theme-color" content="#111827"/>
+<meta name="description" content="StoxBox — Mobile stock tracking with real-time charts and signals"/>
+<title>StoxBox</title>
+<link rel="stylesheet" href="style.css"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ══ WATCHLIST VIEW ══ -->
+  <div class="view active" id="view-watchlist">
+    <header class="app-header">
+      <div class="logo">Stox<span class="accent">Box</span></div>
+      <div class="header-actions">
+        <button class="icon-btn" id="search-toggle" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <button class="icon-btn" aria-label="Notifications">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Search Bar -->
+    <div class="search-bar-wrap" id="search-bar">
+      <div class="search-inner">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="search-input" placeholder="Search ticker (e.g. AAPL, TSLA)…" autocomplete="off" autocapitalize="characters"/>
+        <button id="search-go" class="search-go-btn">Go</button>
+      </div>
+    </div>
+
+    <!-- Market Banner -->
+    <div class="market-scroll">
+      <div class="market-chips" id="market-chips">
+        <div class="m-chip loading-chip">
+          <span class="m-name">S&amp;P 500</span>
+          <span class="m-val">—</span>
+          <span class="m-chg">—</span>
+        </div>
+        <div class="m-chip loading-chip">
+          <span class="m-name">NASDAQ</span>
+          <span class="m-val">—</span>
+          <span class="m-chg">—</span>
+        </div>
+        <div class="m-chip loading-chip">
+          <span class="m-name">DOW</span>
+          <span class="m-val">—</span>
+          <span class="m-chg">—</span>
+        </div>
+        <div class="m-chip loading-chip">
+          <span class="m-name">VIX</span>
+          <span class="m-val">—</span>
+          <span class="m-chg">—</span>
+        </div>
+        <div class="m-chip loading-chip">
+          <span class="m-name">BTC</span>
+          <span class="m-val">—</span>
+          <span class="m-chg">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Label -->
+    <div class="section-label">
+      <span>MY WATCHLIST</span>
+      <span class="stock-count" id="stock-count">5 stocks</span>
+    </div>
+
+    <!-- Watchlist -->
+    <div class="watchlist" id="watchlist"></div>
+
+    <!-- FAB -->
+    <button class="fab" id="fab-add" aria-label="Add stock">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+  </div>
+
+  <!-- ══ CHART DETAIL VIEW ══ -->
+  <div class="view" id="view-chart">
+    <header class="app-header detail-header">
+      <button class="back-btn" id="back-btn" aria-label="Back">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div class="detail-title">
+        <div class="detail-ticker" id="detail-ticker">—</div>
+        <div class="detail-name" id="detail-name">—</div>
+      </div>
+      <div class="detail-price-wrap">
+        <div class="detail-price" id="detail-price">—</div>
+        <div class="detail-chg" id="detail-chg">—</div>
+      </div>
+    </header>
+
+    <div class="chart-view-scroll">
+      <!-- Range Tabs -->
+      <div class="range-tabs">
+        <button class="range-tab active" data-range="1D">1D</button>
+        <button class="range-tab" data-range="1W">1W</button>
+        <button class="range-tab" data-range="1M">1M</button>
+        <button class="range-tab" data-range="3M">3M</button>
+        <button class="range-tab" data-range="1Y">1Y</button>
+      </div>
+
+      <!-- Chart Type Toggle -->
+      <div class="chart-type-row">
+        <button class="chart-type-btn active" data-type="line">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Line
+        </button>
+        <button class="chart-type-btn" data-type="candle">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="6" y="8" width="4" height="8" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/><line x1="8" y1="5" x2="8" y2="8"/><line x1="8" y1="16" x2="8" y2="19"/></svg>
+          Candle
+        </button>
+      </div>
+
+      <!-- Chart Canvas -->
+      <div class="chart-wrap">
+        <canvas id="main-chart"></canvas>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="stats-bar">
+        <div class="stat-item">
+          <span class="stat-label">OPEN</span>
+          <span class="stat-val" id="stat-open">—</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">HIGH</span>
+          <span class="stat-val bull" id="stat-high">—</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">LOW</span>
+          <span class="stat-val bear" id="stat-low">—</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">VOL</span>
+          <span class="stat-val" id="stat-vol">—</span>
+        </div>
+      </div>
+
+      <!-- Technical Signals -->
+      <div class="section-label" style="margin-top:8px;">TECHNICAL SIGNALS</div>
+      <div class="ind-grid" id="ind-grid"></div>
+
+      <!-- Fundamentals -->
+      <div class="section-label" style="margin-top:8px;">FUNDAMENTALS</div>
+      <div class="fund-grid" id="fund-grid"></div>
+
+      <!-- News -->
+      <div class="section-label" style="margin-top:8px;">LATEST NEWS</div>
+      <div class="stock-news-list" id="stock-news-list"></div>
+
+      <div style="height:28px;"></div>
+    </div>
+  </div>
+
+  <!-- ══ PORTFOLIO VIEW ══ -->
+  <div class="view" id="view-portfolio">
+    <header class="app-header">
+      <div class="logo">Portfolio</div>
+      <button class="icon-btn" id="add-position-btn" aria-label="Add position">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </header>
+
+    <!-- Portfolio summary -->
+    <div class="portfolio-summary" id="portfolio-summary">
+      <div class="port-total-label">TOTAL VALUE</div>
+      <div class="port-total" id="port-total">$0.00</div>
+      <div class="port-pnl" id="port-pnl">+$0.00 (0.00%)</div>
+    </div>
+
+    <div class="section-label">
+      <span>POSITIONS</span>
+      <span class="stock-count" id="position-count">0 positions</span>
+    </div>
+
+    <div class="portfolio-list" id="portfolio-list">
+      <div class="empty-state">
+        <div class="empty-icon">💼</div>
+        <div class="empty-title">No positions yet</div>
+        <div class="empty-sub">Tap + to add your first position and track your P&amp;L</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ANALYTICS VIEW ══ -->
+  <div class="view" id="view-analytics">
+    <header class="app-header"><div class="logo">Analytics</div></header>
+    <div class="empty-state" style="flex:1;">
+      <div class="empty-icon">📊</div>
+      <div class="empty-title">Coming Soon</div>
+      <div class="empty-sub">Sector heatmaps &amp; correlation matrix</div>
+    </div>
+  </div>
+
+  <!-- ══ NEWS VIEW ══ -->
+  <div class="view" id="view-news">
+    <header class="app-header"><div class="logo">Market News</div></header>
+    <div class="news-list" id="news-list"></div>
+  </div>
+
+  <!-- ══ BOTTOM NAV ══ -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-view="watchlist">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="m9 12 2 2 4-4"/></svg>
+      <span>Watchlist</span>
+    </button>
+    <button class="nav-item" data-view="portfolio">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+      <span>Portfolio</span>
+    </button>
+    <button class="nav-item" data-view="analytics">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span>Analytics</span>
+    </button>
+    <button class="nav-item" data-view="news">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a4 4 0 0 1-4 4z"/><path d="M18 14H10M18 10H10M18 18H10"/></svg>
+      <span>News</span>
+    </button>
+  </nav>
+
+</div>
+
+<!-- ══ ADD TO WATCHLIST MODAL ══ -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Add to Watchlist</div>
+    <div class="modal-sub">Enter a stock or crypto ticker symbol</div>
+    <input type="text" id="modal-input" placeholder="e.g. GOOGL, ETH, AMZN" class="modal-input" autocapitalize="characters" autocomplete="off"/>
+    <div class="modal-actions">
+      <button class="modal-cancel" id="modal-cancel">Cancel</button>
+      <button class="modal-confirm" id="modal-confirm">Add Stock</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ADD POSITION MODAL ══ -->
+<div class="modal-overlay" id="position-modal-overlay">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Add Position</div>
+    <div class="modal-sub">Track your buy price and shares</div>
+    <input type="text"   id="pos-ticker" placeholder="Ticker (e.g. AAPL)"  class="modal-input" style="margin-bottom:8px;" autocapitalize="characters"/>
+    <input type="number" id="pos-shares" placeholder="Shares (e.g. 10)"    class="modal-input" style="margin-bottom:8px;" inputmode="decimal"/>
+    <input type="number" id="pos-price"  placeholder="Buy price (e.g. 150)" class="modal-input" inputmode="decimal"/>
+    <div class="modal-actions">
+      <button class="modal-cancel" id="pos-cancel">Cancel</button>
+      <button class="modal-confirm" id="pos-confirm">Add Position</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
